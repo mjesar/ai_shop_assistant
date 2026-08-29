@@ -420,6 +420,7 @@ DEPENDENCIES
   bundler-audit
   capybara
   debug
+  dotenv
   factory_bot_rails
   faker
   importmap-rails
