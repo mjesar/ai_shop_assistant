@@ -6,4 +6,7 @@ class Message
   field :content, type: String
 
   belongs_to :chat
+
+  validates :role, presence: true
+  validates :content, presence: true
 end
