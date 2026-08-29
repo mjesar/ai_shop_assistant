@@ -11,7 +11,9 @@ RSpec.describe Chat, type: :model do
       chat = Chat.create!(model_id: 'gemini-2.0-flash')
 
       fake_response = double(content: 'Hello there!')
-      fake_llm_chat = double('RubyLLM::Chat', ask: fake_response)
+      fake_llm_chat = double('RubyLLM::Chat')
+      allow(fake_llm_chat).to receive(:with_tool).and_return(fake_llm_chat)
+      allow(fake_llm_chat).to receive(:ask).and_return(fake_response)
       allow(RubyLLM).to receive(:chat).and_return(fake_llm_chat)
 
       chat.ask('Hi')

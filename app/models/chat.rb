@@ -8,7 +8,7 @@ class Chat
 
   def ask(content)
     messages.create!(role: 'user', content: content)
-    response = RubyLLM.chat(model: model_id).ask(content)
+    response = RubyLLM.chat(model: model_id).with_tool(SearchProducts).ask(content)
     messages.create!(role: 'assistant', content: response.content)
     response
   end
