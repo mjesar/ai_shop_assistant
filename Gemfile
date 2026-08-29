@@ -68,3 +68,4 @@ end
 
 gem 'mongoid'
 gem 'ruby_llm'
+gem 'ruby_llm-mcp'
