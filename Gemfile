@@ -69,3 +69,6 @@ end
 gem 'mongoid'
 gem 'ruby_llm'
 gem 'ruby_llm-mcp'
+gem 'solid_queue'
+gem 'solid_cable'
+gem 'sqlite3'

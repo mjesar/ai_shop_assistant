@@ -9,6 +9,7 @@ require "action_mailer/railtie"
 
 require "action_view/railtie"
 require "action_cable/engine"
+require "active_record/railtie"
 
 Bundler.require(*Rails.groups)
 
