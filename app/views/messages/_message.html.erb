@@ -1,0 +1,4 @@
+<div class="p-3 rounded <%= message.role == 'user' ? 'bg-blue-100' : 'bg-gray-100' %>">
+  <strong><%= message.role.capitalize %>:</strong>
+  <p><%= message.content %></p>
+</div>
