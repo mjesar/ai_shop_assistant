@@ -4,8 +4,9 @@
 
 <ul class="space-y-2">
   <% @chats.each do |chat| %>
-    <li>
+    <li class="flex items-center gap-4">
       <%= link_to "Chat with #{chat.model_id}", chat_path(chat), class: "text-emerald-700 hover:text-emerald-900 underline" %>
+      <%= button_to "Delete", chat_path(chat), method: :delete, class: "text-red-600 hover:text-red-800 text-sm", form: { data: { turbo_confirm: "Delete this chat and all its messages?" } } %>
     </li>
   <% end %>
 </ul>

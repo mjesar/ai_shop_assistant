@@ -11,4 +11,10 @@ class ChatsController < ApplicationController
     @chat = Chat.create!(model_id: 'gemini-3.6-flash')
     redirect_to @chat
   end
+
+  def destroy
+    @chat = Chat.find(params[:id])
+    @chat.destroy
+    redirect_to chats_path, notice: "Chat deleted."
+  end
 end
