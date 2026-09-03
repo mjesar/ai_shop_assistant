@@ -15,5 +15,11 @@ class Chat
     response = RubyLLM.chat(model: model_id).with_tool(SearchProducts).ask(content)
     messages.create!(role: 'assistant', content: response.content)
     response
+  rescue StandardError => e
+    Turbo::StreamsChannel.broadcast_append_to(
+      self, target: 'messages', partial: 'messages/error',
+      locals: { error_message: "Sorry, something went wrong generating a response. Please try again." }
+    )
+    raise
   end
 end
