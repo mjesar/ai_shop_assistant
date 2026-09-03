@@ -1,4 +1,4 @@
-<div class="p-3 rounded <%= message.role == 'user' ? 'bg-blue-100 text-blue-900' : 'bg-emerald-50 text-emerald-900' %>">
+<div class="p-3 rounded <%= message.role == 'user' ? 'bg-blue-100 text-blue-900' : 'bg-emerald-50 text-emerald-900' %>" data-role="<%= message.role %>">
   <strong><%= message.role.capitalize %>:</strong>
   <div class="message-content"><%= render_markdown(message.content) %></div>
 </div>
