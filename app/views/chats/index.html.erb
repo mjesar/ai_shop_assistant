@@ -1,11 +1,11 @@
 <h1 class="text-2xl font-bold mb-4">Chats</h1>
 
-<%= button_to "Start a new chat", chats_path, method: :post, class: "bg-blue-600 text-white px-4 py-2 rounded mb-6" %>
+<%= button_to "Start a new chat", chats_path, method: :post, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded mb-6" %>
 
 <ul class="space-y-2">
   <% @chats.each do |chat| %>
     <li>
-      <%= link_to "Chat with #{chat.model_id}", chat_path(chat), class: "text-blue-600 underline" %>
+      <%= link_to "Chat with #{chat.model_id}", chat_path(chat), class: "text-emerald-700 hover:text-emerald-900 underline" %>
     </li>
   <% end %>
 </ul>

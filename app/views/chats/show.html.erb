@@ -1,3 +1,5 @@
+<%= link_to "← Back to chats", chats_path, class: "text-sm text-gray-600 hover:text-gray-900 mb-2 inline-block" %>
+
 <h1 class="text-2xl font-bold mb-4">Chat with <%= @chat.model_id %></h1>
 
 <%= turbo_stream_from @chat %>
