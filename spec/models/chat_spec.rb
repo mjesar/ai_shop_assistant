@@ -23,4 +23,18 @@ RSpec.describe Chat, type: :model do
       expect(chat.messages.first.content).to eq('Hi')
     end
   end
+  describe '.start!' do
+    it 'creates a chat and its first message, then enqueues a background job for the reply' do
+      chat = nil
+
+      expect {
+        chat = Chat.start!(model_id: 'gemini-3.5-flash-lite', content: 'Hi')
+      }.to have_enqueued_job(ChatResponseJob)
+
+      expect(chat.persisted?).to be true
+      expect(chat.messages.count).to eq(1)
+      expect(chat.messages.first.role).to eq('user')
+      expect(chat.messages.first.content).to eq('Hi')
+    end
+  end
 end

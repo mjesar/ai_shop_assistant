@@ -37,6 +37,13 @@ class Chat
     raise
   end
 
+  def self.start!(model_id:, content:)
+    chat = create!(model_id: model_id)
+    chat.messages.create!(role: 'user', content: content)
+    ChatResponseJob.perform_later(chat.id, content)
+    chat
+  end
+
   private
 
   def tool_status_dom_id

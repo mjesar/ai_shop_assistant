@@ -17,12 +17,14 @@ RSpec.describe "Chats", type: :request do
   end
 
   describe "POST /chats" do
-    it "creates a new chat and redirects to it" do
+    it "creates a new chat with its first message and redirects to it" do
       expect {
-        post "/chats"
+        post "/chats", params: { content: 'Hi' }
       }.to change(Chat, :count).by(1)
+        .and have_enqueued_job(ChatResponseJob)
 
       expect(response).to redirect_to(chat_path(Chat.last))
+      expect(Chat.last.messages.first.content).to eq('Hi')
     end
   end
 end

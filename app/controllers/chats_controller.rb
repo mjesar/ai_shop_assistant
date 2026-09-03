@@ -3,12 +3,15 @@ class ChatsController < ApplicationController
     @chats = Chat.all
   end
 
+  def new
+  end
+
   def show
     @chat = Chat.find(params[:id])
   end
 
   def create
-    @chat = Chat.create!(model_id: 'gemini-3.5-flash-lite')
+    @chat = Chat.start!(model_id: 'gemini-3.5-flash-lite', content: params[:content])
     redirect_to @chat
   end
 
