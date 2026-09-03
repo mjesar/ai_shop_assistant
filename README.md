@@ -72,6 +72,24 @@ The `SearchProducts` tool is fully decoupled from this project's web UI — the 
 - **A customer support triage bot** — extended with Shopify's Admin API for order-specific lookups
 - **A market research agent** — running structured catalog queries at scale for trend analysis
 
+## FAQ
+
+**What is the Shopify Catalog API?**
+A public API (launched Winter '26) that lets developers search across hundreds
+of millions of products from real Shopify merchants — the same catalog
+powering AI shopping features in ChatGPT, Perplexity, and Copilot.
+
+**What is RubyLLM?**
+A Ruby gem that gives any Ruby app a single, consistent interface to multiple
+AI providers (OpenAI, Anthropic, Gemini, and others) — for chat, tool calling,
+streaming, and more — without hand-rolling each provider's API.
+
+**How do RubyLLM and the Shopify Catalog API work together here?**
+RubyLLM handles the AI conversation and decides when a user's question needs
+real product data. When it does, it calls a custom `SearchProducts` tool that
+authenticates with Shopify and queries the live catalog over MCP — see the
+architecture diagram above.
+
 ## Engineering notes
 
 - Considered `ruby_llm-mcp` for the Shopify integration, but its `initialize` handshake crashes on this server's notification response format — reported upstream as [#155](https://github.com/patvice/ruby_llm-mcp/issues/155); implemented the integration directly over HTTP/JSON-RPC instead
