@@ -1,1 +1,9 @@
 @import "tailwindcss";
+.message-content a {
+  color: #059669;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.message-content a:hover {
+  color: #047857;
+}
