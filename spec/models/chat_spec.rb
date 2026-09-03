@@ -13,6 +13,7 @@ RSpec.describe Chat, type: :model do
       fake_response = double(content: 'Hello there!')
       fake_llm_chat = double('RubyLLM::Chat')
       allow(fake_llm_chat).to receive(:with_tool).and_return(fake_llm_chat)
+      allow(fake_llm_chat).to receive(:on_tool_call).and_return(fake_llm_chat)
       allow(fake_llm_chat).to receive(:ask).and_return(fake_response)
       allow(RubyLLM).to receive(:chat).and_return(fake_llm_chat)
 
