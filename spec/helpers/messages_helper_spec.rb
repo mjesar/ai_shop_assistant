@@ -1,15 +1,16 @@
 require 'rails_helper'
 
-# Specs in this file have access to a helper object that includes
-# the MessagesHelper. For example:
-#
-# describe MessagesHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       expect(helper.concat_strings("this","that")).to eq("this that")
-#     end
-#   end
-# end
 RSpec.describe MessagesHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe '#render_markdown' do
+    it 'converts bold markdown to HTML' do
+      result = helper.render_markdown('**hello**')
+      expect(result).to include('<strong>hello</strong>')
+    end
+
+    it 'converts markdown links to HTML with target blank' do
+      result = helper.render_markdown('[Snowboard](https://example.com)')
+      expect(result).to include('<a href="https://example.com"')
+      expect(result).to include('target="_blank"')
+    end
+  end
 end
