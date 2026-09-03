@@ -11,7 +11,7 @@
 
   <%= form_with url: chat_messages_path(@chat), method: :post,
       data: { action: "turbo:submit-start->chat#submit turbo:submit-end->chat#submitEnd" } do |form| %>
-    <%= form.text_field :content, placeholder: "Ask something...", class: "border rounded px-3 py-2 w-full", data: { chat_target: "input" } %>
+    <%= form.text_field :content, placeholder: "Ask something...", autocomplete: "off", class: "border rounded px-3 py-2 w-full", data: { chat_target: "input" } %>
     <%= form.submit "Send", class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded mt-2", data: { chat_target: "button" } %>
   <% end %>
 </div>

@@ -2,7 +2,7 @@
 
 <%= link_to "Start a new chat", new_chat_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded mb-6" %>
 
-<ul class="space-y-2">
+<ul class="space-y-2 mt-4">
   <% @chats.each do |chat| %>
     <li class="flex items-center gap-4">
       <%= link_to "Chat with #{chat.model_id}", chat_path(chat), class: "text-emerald-700 hover:text-emerald-900 underline" %>

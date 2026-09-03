@@ -3,6 +3,6 @@
 <h1 class="text-2xl font-bold mb-4">Start a new chat</h1>
 
 <%= form_with url: chats_path, method: :post do |form| %>
-  <%= form.text_field :content, placeholder: "Ask something...", class: "border rounded px-3 py-2 w-full" %>
+  <%= form.text_field :content, placeholder: "Ask something...", autocomplete: "off", class: "border rounded px-3 py-2 w-full" %>
   <%= form.submit "Send", class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded mt-2" %>
 <% end %>
