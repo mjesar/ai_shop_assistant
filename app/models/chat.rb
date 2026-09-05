@@ -14,6 +14,13 @@ class Chat
   def generate_response(content)
     tool_status_shown = false
     llm_chat = RubyLLM.chat(model: model_id).with_tool(SearchProducts)
+
+    prior_messages = messages.order_by(created_at: :asc).to_a
+    prior_messages.pop
+    prior_messages.each do |message|
+      llm_chat.add_message(role: message.role.to_sym, content: message.content)
+    end
+
     llm_chat.on_tool_call do
       unless tool_status_shown
         tool_status_shown = true
