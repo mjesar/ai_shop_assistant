@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" role="img" aria-labelledby="t d">
+  <title id="t">Why live replies need Solid Cable</title>
+  <desc id="d">Two panels. Top: with Action Cable's default async adapter, the background job process broadcasts into its own memory and the web process holding the browser connection never hears it. Bottom: with Solid Cable, the job writes the broadcast to a shared SQLite database, the web process reads it and pushes it to the browser.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#c41e4a"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4fae7b"/></marker>
+  </defs>
+  <rect width="1000" height="420" rx="16" fill="#14261b"/>
+  <g font-family="Poppins, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#edf1ed" font-size="15" text-anchor="middle">
+    <text x="40" y="36" font-size="16" font-weight="600" fill="#e0476f" text-anchor="start">Before: async adapter (broadcast never arrives)</text>
+    <rect x="40" y="56" width="240" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="160" y="87">Job process</text><text x="160" y="108" font-size="12" fill="#b7c4bb">broadcasts to its own memory</text>
+    <rect x="380" y="56" width="240" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="500" y="87">Web process</text><text x="500" y="108" font-size="12" fill="#b7c4bb">holds the browser connection</text>
+    <rect x="720" y="56" width="240" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="840" y="97">Browser</text>
+    <path d="M 282 91 L 340 91" stroke="#c41e4a" stroke-width="3" stroke-dasharray="6 5"/>
+    <text x="311" y="82" fill="#e0476f" font-size="22" font-weight="700">✕</text>
+    <path d="M 622 91 L 716 91" stroke="#4fae7b" stroke-width="3" marker-end="url(#g)"/>
+    <text x="500" y="160" font-size="13" fill="#7f9186">Two separate processes cannot share memory, so the reply never reaches the page.</text>
+
+    <text x="40" y="226" font-size="16" font-weight="600" fill="#4fae7b" text-anchor="start">After: Solid Cable (broadcast goes through the database)</text>
+    <rect x="40" y="246" width="200" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="140" y="277">Job process</text><text x="140" y="298" font-size="12" fill="#b7c4bb">writes the broadcast</text>
+    <rect x="300" y="246" width="200" height="70" rx="10" fill="#2a1d24" stroke="#c41e4a" stroke-width="2"/>
+    <text x="400" y="277">SQLite (cable DB)</text><text x="400" y="298" font-size="12" fill="#b7c4bb">shared by both processes</text>
+    <rect x="560" y="246" width="200" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="660" y="277">Web process</text><text x="660" y="298" font-size="12" fill="#b7c4bb">polls, then pushes</text>
+    <rect x="820" y="246" width="140" height="70" rx="10" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="890" y="287">Browser</text>
+    <path d="M 242 281 L 296 281" stroke="#c41e4a" stroke-width="3" marker-end="url(#a)"/>
+    <path d="M 502 281 L 556 281" stroke="#c41e4a" stroke-width="3" marker-end="url(#a)"/>
+    <path d="M 762 281 L 816 281" stroke="#c41e4a" stroke-width="3" marker-end="url(#a)"/>
+    <text x="500" y="350" font-size="13" fill="#7f9186">No Redis needed: the app's own SQLite database is the message bus.</text>
+  </g>
+</svg>
