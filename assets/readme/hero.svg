@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="t d">
+  <title id="t">AI Shop Assistant</title>
+  <desc id="d">A Ruby on Rails shopping chat assistant. Gemini decides when to call a tool that searches Shopify's live global catalog over MCP, and the reply streams to the browser. Flow: Ask, Search, Answer.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#c41e4a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="320" rx="20" fill="#14261b"/>
+
+  <g font-family="Poppins, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="64" y="86" font-size="18" font-weight="600" letter-spacing="3" fill="#4fae7b">RAILS  ·  RUBYLLM  ·  MCP  ·  SHOPIFY</text>
+    <text x="64" y="172" font-size="76" font-weight="600" fill="#edf1ed">AI Shop <tspan fill="#e0476f">Assistant</tspan></text>
+    <rect x="66" y="196" width="72" height="4" rx="2" fill="#c41e4a"/>
+    <text x="64" y="244" font-size="26" fill="#b7c4bb">A chat that searches Shopify's live catalog, not made-up products.</text>
+    <text x="64" y="282" font-size="18" fill="#7f9186">Tool calling over MCP, built with Ruby on Rails 8 and Gemini.</text>
+  </g>
+
+  <g font-family="Poppins, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#edf1ed" text-anchor="middle">
+    <rect x="800" y="124" width="100" height="72" rx="12" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="850" y="166">Ask</text>
+    <rect x="950" y="124" width="100" height="72" rx="12" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="1000" y="166">Search</text>
+    <rect x="1100" y="124" width="76" height="72" rx="12" fill="#1d3a2a" stroke="#2e7d4f" stroke-width="2"/>
+    <text x="1138" y="166">Answer</text>
+    <path d="M 902 160 L 946 160" stroke="#c41e4a" stroke-width="3" marker-end="url(#a)"/>
+    <path d="M 1052 160 L 1096 160" stroke="#c41e4a" stroke-width="3" marker-end="url(#a)"/>
+    <text x="1000" y="224" font-size="13" fill="#7f9186">Gemini decides if it needs to</text>
+  </g>
+</svg>
