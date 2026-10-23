@@ -11,9 +11,9 @@ RSpec.describe Chat, type: :model do
       chat = Chat.create!(model_id: 'gemini-2.0-flash')
 
       fake_response = double(content: 'Hello there!')
-      fake_llm_chat = double('RubyLLM::Chat')
-      allow(fake_llm_chat).to receive(:with_tool).and_return(fake_llm_chat)
-      allow(fake_llm_chat).to receive(:on_tool_call).and_return(fake_llm_chat)
+      fake_llm_chat = instance_double(RubyLLM::Chat)
+      allow(fake_llm_chat).to receive(:with_tools).and_return(fake_llm_chat)
+      allow(fake_llm_chat).to receive(:before_tool_call).and_return(fake_llm_chat)
       allow(fake_llm_chat).to receive(:ask).and_return(fake_response)
       allow(RubyLLM).to receive(:chat).and_return(fake_llm_chat)
 
@@ -26,15 +26,15 @@ RSpec.describe Chat, type: :model do
     it 'replays prior conversation turns into the LLM chat on the next ask' do
       chat = Chat.create!(model_id: 'gemini-2.0-flash')
 
-      first_llm_chat = double('RubyLLM::Chat (turn 1)')
-      allow(first_llm_chat).to receive(:with_tool).and_return(first_llm_chat)
-      allow(first_llm_chat).to receive(:on_tool_call)
+      first_llm_chat = instance_double(RubyLLM::Chat, 'turn 1')
+      allow(first_llm_chat).to receive(:with_tools).and_return(first_llm_chat)
+      allow(first_llm_chat).to receive(:before_tool_call)
       allow(first_llm_chat).to receive(:add_message)
       allow(first_llm_chat).to receive(:ask).and_return(double(content: 'Nice to meet you, Alex!'))
 
-      second_llm_chat = double('RubyLLM::Chat (turn 2)')
-      allow(second_llm_chat).to receive(:with_tool).and_return(second_llm_chat)
-      allow(second_llm_chat).to receive(:on_tool_call)
+      second_llm_chat = instance_double(RubyLLM::Chat, 'turn 2')
+      allow(second_llm_chat).to receive(:with_tools).and_return(second_llm_chat)
+      allow(second_llm_chat).to receive(:before_tool_call)
       replayed_messages = []
       allow(second_llm_chat).to receive(:add_message) { |attrs| replayed_messages << attrs }
       allow(second_llm_chat).to receive(:ask).and_return(double(content: 'Your name is Alex.'))

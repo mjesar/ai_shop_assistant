@@ -1,6 +1,6 @@
 class SearchProducts < RubyLLM::Tool
   description "Search Shopify's global product catalog for items matching a query"
-  param :query, desc: 'What the customer is looking for, e.g. "snowboard" or "red running shoes"'
+  parameter :query, description: 'What the customer is looking for, e.g. "snowboard" or "red running shoes"'
 
   def execute(query:)
     token = fetch_shopify_catalog_token

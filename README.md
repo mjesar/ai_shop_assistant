@@ -54,8 +54,8 @@ A normal model call is `Question → Answer`. With tool calling it becomes `Ques
 
 1. **Save and enqueue.** [`ChatsController#create`](app/controllers/chats_controller.rb) calls `Chat.start!`, which saves the first message and enqueues a job. It uses the model `gemini-3.5-flash-lite`. Later messages go through [`MessagesController#create`](app/controllers/messages_controller.rb), which returns `head :no_content` straight away.
 2. **Run the model in a job.** [`ChatResponseJob`](app/jobs/chat_response_job.rb) calls `Chat#generate_response`, so a slow Gemini reply never blocks a web request. If the chat was deleted meanwhile, the job logs it and skips.
-3. **Give the model one tool.** [`Chat#generate_response`](app/models/chat.rb) builds `RubyLLM.chat(model: model_id).with_tool(SearchProducts)`. The model now knows it can ask for a search. Before asking, the job replays the earlier messages of the conversation into the new chat so the model remembers what was said.
-4. **Let the model decide.** If the model asks for the tool, `on_tool_call` broadcasts a "searching" status line to the browser ([`messages/_tool_status`](app/views/messages/_tool_status.html.erb)). If it does not need a search, no call is made.
+3. **Give the model one tool.** [`Chat#generate_response`](app/models/chat.rb) builds `RubyLLM.chat(model: model_id).with_tools(SearchProducts)`. The model now knows it can ask for a search. Before asking, the job replays the earlier messages of the conversation into the new chat so the model remembers what was said.
+4. **Let the model decide.** If the model asks for the tool, `before_tool_call` broadcasts a "searching" status line to the browser ([`messages/_tool_status`](app/views/messages/_tool_status.html.erb)). If it does not need a search, no call is made.
 5. **Search the live catalog.** [`SearchProducts`](app/tools/search_products.rb) fetches an OAuth 2.0 client-credentials token from `https://api.shopify.com/auth/access_token` (in [`config/initializers/ruby_llm.rb`](config/initializers/ruby_llm.rb)), then sends a JSON-RPC `tools/call` for `search_catalog` to `https://catalog.shopify.com/api/ucp/mcp`. It returns the first three products.
 6. **Save and stream the reply.** The assistant message is saved, and `Message` broadcasts itself with a Turbo Stream ([`app/models/message.rb`](app/models/message.rb)). On any error, the job broadcasts an error message and removes the "searching" line, then re-raises so the failure still shows up in the job dashboard.
 
@@ -162,10 +162,10 @@ Folders you can ignore: `bin/`, `config.ru`, `Dockerfile`, `.kamal/`, `public/`,
 ### FAQ
 
 #### How do I add tool calling to a Rails app with RubyLLM?
-Subclass `RubyLLM::Tool`, describe it and its parameters, implement `execute`, and attach it with `RubyLLM.chat(...).with_tool(YourTool)`. The model then decides when to call it. [`SearchProducts`](app/tools/search_products.rb) is a working example.
+Subclass `RubyLLM::Tool`, describe it and its parameters, implement `execute`, and attach it with `RubyLLM.chat(...).with_tools(YourTool)`. The model then decides when to call it. [`SearchProducts`](app/tools/search_products.rb) is a working example.
 
 #### How do I call an MCP server from Ruby?
-An MCP call over HTTP is a JSON-RPC POST. This app sends `tools/call` with the tool name `search_catalog` and an `Authorization: Bearer` header, using plain `Net::HTTP`. The `ruby_llm-mcp` gem is in the Gemfile, but I do not use it for this call because of the bug in [#155](https://github.com/patvice/ruby_llm-mcp/issues/155).
+An MCP call over HTTP is a JSON-RPC POST. This app sends `tools/call` with the tool name `search_catalog` and an `Authorization: Bearer` header, using plain `Net::HTTP`. I started with the `ruby_llm-mcp` gem but dropped it because of the bug in [#155](https://github.com/patvice/ruby_llm-mcp/issues/155).
 
 #### Why do live updates from a background job need Solid Cable or Redis?
 Because the job and the web server are separate processes, and the default `async` adapter only broadcasts inside one process. Solid Cable fixes this with a shared SQLite database, as shown [above](#what-keeps-it-reliable).
@@ -194,7 +194,7 @@ MongoDB connection settings are in `config/mongoid.yml`. Run the tests with `bun
 ## Tech stack
 
 - Ruby 4.0.4 and Rails 8.1
-- RubyLLM 1.16 with the Gemini API (`gemini-3.5-flash-lite`)
+- RubyLLM 2.1 with the Gemini API (`gemini-3.5-flash-lite`)
 - Shopify Catalog API over MCP (JSON-RPC), OAuth 2.0 client credentials
 - Hotwire (Turbo 2, Stimulus), Action Cable with Solid Cable 4.0
 - Solid Queue 1.7 and Mission Control: Jobs for background work

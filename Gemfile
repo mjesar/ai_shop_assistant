@@ -67,8 +67,7 @@ group :test do
 end
 
 gem 'mongoid'
-gem 'ruby_llm'
-gem 'ruby_llm-mcp'
+gem 'ruby_llm', '~> 2.1'
 gem 'solid_queue'
 gem 'solid_cable'
 gem 'sqlite3'
