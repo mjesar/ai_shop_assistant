@@ -5,6 +5,7 @@
 <p align="center"><strong>A shopping chat where the AI searches Shopify's real catalog instead of making products up.</strong></p>
 
 <p align="center">
+  <a href="https://github.com/mjesar/ai_shop_assistant/actions/workflows/ci.yml"><img src="https://github.com/mjesar/ai_shop_assistant/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <img src="https://img.shields.io/badge/Ruby-4.0-CC342D?logo=ruby&logoColor=white" alt="Ruby 4.0">
   <img src="https://img.shields.io/badge/Rails-8.1-CC0000?logo=rubyonrails&logoColor=white" alt="Rails 8.1">
   <img src="https://img.shields.io/badge/Model-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini model">
@@ -46,7 +47,19 @@ Getting there also taught me two things the tutorials skip:
 
 <!-- Video: drag the demo MP4 into GitHub's web editor and paste the user-attachments URL on its own line here. -->
 
-I have not recorded a set of benchmark runs for this project, so there is no results table to show. What I can state from the code is what one tool call returns: up to three products from Shopify's catalog, each reduced to a `title`, a `price` and a `url` (see [`app/tools/search_products.rb`](app/tools/search_products.rb)). Everything the model says about products comes from those three fields.
+### Real runs
+
+Three questions sent to `gemini-3.5-flash-lite` with the `SearchProducts` tool, against the live catalog on 2026-10-24. The catalog is live, so the same question can return different products on another day.
+
+| Question | Tool calls | What the catalog returned | What the model answered |
+|---|---|---|---|
+| "Find me a snowboard under $500" | 1 (`snowboard`) | 3 snowboards: $279.95, $649.95, $549.95 | Only the Salomon Pulse at $279.95, dropping the two over budget |
+| "red running shoes" | 1 (`red running shoes`) | 3 pairs: $187.00, $79.98, $127.00 | All 3, with names, prices and links |
+| "Hi, what can you help me with?" | 0 | (no search) | Offered to check order statuses and store policies, which it cannot do |
+
+The first two rows are the point of the project: the model searched, then reasoned over real results (it filtered by budget itself). The third row is an honest failure. The app sends no system prompt, so the model invents a generic store assistant role with abilities it does not have. Its only tool is product search.
+
+One tool call returns up to three products, each reduced to a `title`, a `price` and a `url` (see [`app/tools/search_products.rb`](app/tools/search_products.rb)). Prices arrive in minor units (`27995` for $279.95) and the model converts them.
 
 ## How it works
 
@@ -196,7 +209,7 @@ MongoDB connection settings are in `config/mongoid.yml`. Run the tests with `bun
 - Ruby 4.0.4 and Rails 8.1
 - RubyLLM 2.1 with the Gemini API (`gemini-3.5-flash-lite`)
 - Shopify Catalog API over MCP (JSON-RPC), OAuth 2.0 client credentials
-- Hotwire (Turbo 2, Stimulus), Action Cable with Solid Cable 4.0
+- Hotwire (Turbo 2, Stimulus), Action Cable with Solid Cable 4.1
 - Solid Queue 1.7 and Mission Control: Jobs for background work
 - MongoDB with Mongoid 9.1 (chats and messages), SQLite (queue and cable)
 - Tailwind CSS and Redcarpet (Markdown in replies)
