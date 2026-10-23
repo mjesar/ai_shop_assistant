@@ -11,6 +11,5 @@ class Message
   validates :role, presence: true
   validates :content, presence: true
 
-  after_create_commit { broadcast_append_to chat, target: 'messages', partial: 'messages/message', locals: { message: self } }
-
+  after_create_commit { broadcast_append_to chat, target: "messages", partial: "messages/message", locals: { message: self } }
 end
