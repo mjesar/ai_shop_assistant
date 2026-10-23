@@ -7,7 +7,7 @@ class Chat
   has_many :messages, dependent: :destroy
 
   def ask(content)
-    messages.create!(role: 'user', content: content)
+    messages.create!(role: "user", content: content)
     generate_response(content)
   end
 
@@ -25,7 +25,7 @@ class Chat
       unless tool_status_shown
         tool_status_shown = true
         Turbo::StreamsChannel.broadcast_append_to(
-          self, target: 'messages', partial: 'messages/tool_status',
+          self, target: "messages", partial: "messages/tool_status",
           locals: { dom_id: tool_status_dom_id }
         )
       end
@@ -33,12 +33,12 @@ class Chat
 
     response = llm_chat.ask(content)
     Turbo::StreamsChannel.broadcast_remove_to(self, target: tool_status_dom_id) if tool_status_shown
-    messages.create!(role: 'assistant', content: response.content)
+    messages.create!(role: "assistant", content: response.content)
     response
   rescue StandardError => e
     Turbo::StreamsChannel.broadcast_remove_to(self, target: tool_status_dom_id) if tool_status_shown
     Turbo::StreamsChannel.broadcast_append_to(
-      self, target: 'messages', partial: 'messages/error',
+      self, target: "messages", partial: "messages/error",
       locals: { error_message: "Sorry, something went wrong generating a response. Please try again." }
     )
     raise
@@ -46,7 +46,7 @@ class Chat
 
   def self.start!(model_id:, content:)
     chat = create!(model_id: model_id)
-    chat.messages.create!(role: 'user', content: content)
+    chat.messages.create!(role: "user", content: content)
     ChatResponseJob.perform_later(chat.id, content)
     chat
   end

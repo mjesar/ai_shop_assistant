@@ -11,7 +11,7 @@ class ChatsController < ApplicationController
   end
 
   def create
-    @chat = Chat.start!(model_id: 'gemini-3.5-flash-lite', content: params[:content])
+    @chat = Chat.start!(model_id: "gemini-3.5-flash-lite", content: params[:content])
     redirect_to @chat
   end
 
