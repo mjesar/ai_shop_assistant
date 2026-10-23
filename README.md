@@ -210,4 +210,4 @@ It works end to end: you can chat, the model can search the live catalog, and re
 
 - [`shop_mcp_server`](https://github.com/mjesar/shop_mcp_server): the other side of MCP, a Rails server that exposes a store to LLMs, with RAG over pgvector.
 - [`product_geo_agent`](https://github.com/mjesar/product_geo_agent): a Rails agent that scores how discoverable a Shopify product is to AI assistants.
-- [`ucp_catalog`](https://github.com/mjesar/ucp_catalog): a work-in-progress Ruby gem for talking to UCP catalog APIs through one interface.
+- [`support_engineer`](https://github.com/mjesar/support_engineer): a Rails 8 AI support agent that investigates orders and shipments, searches company policies and asks a human before it acts. A learning project in progress.
