@@ -27,10 +27,7 @@ class SearchProducts < RubyLLM::Tool
               profile: 'https://shopify.dev/ucp/agent-profiles/2026-04-08/valid-with-capabilities.json'
             }
           },
-          catalog: {
-            query: query,
-            catalog_id: '01m179qyqpjnjj24wddcjqp2h6'
-          }
+          catalog: { query: query }
         }
       }
     }.to_json
