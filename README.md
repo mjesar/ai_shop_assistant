@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Model-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini model">
   <img src="https://img.shields.io/badge/Tested%20with-RSpec-2e7d4f" alt="Tested with RSpec">
   <img src="https://img.shields.io/badge/Topic-MCP%20%2F%20agentic%20commerce-c41e4a" alt="MCP and agentic commerce">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License"></a>
 </p>
 
 **AI Shop Assistant is an AI shopping assistant built with Ruby on Rails 8 that shows Rails developers how to give an LLM a real tool: the model decides when to search Shopify's live Global Catalog (through MCP) and answers with real products, prices and links.** It is the same tool calling pattern behind the shopping features in ChatGPT, Perplexity and Copilot, built from scratch in Ruby.
@@ -217,7 +218,7 @@ MongoDB connection settings are in `config/mongoid.yml`. Run the tests with `bun
 
 ## Status
 
-It works end to end: you can chat, the model can search the live catalog, and replies stream in. It is a learning and portfolio project, not a production store assistant. It returns at most three products per search, it only searches (no cart, checkout or accounts), and the specs stub every external call, so there is no automated check against the live APIs. The repo also has no license file yet, so the code is shared for reading.
+It works end to end: you can chat, the model can search the live catalog, and replies stream in. It is a learning and portfolio project, not a production store assistant. It returns at most three products per search, it only searches (no cart, checkout or accounts), and the specs stub every external call, so there is no automated check against the live APIs. The code is released under the [MIT License](LICENSE).
 
 ## Related work
 
