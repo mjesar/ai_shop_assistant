@@ -46,19 +46,36 @@ Getting there also taught me two things the tutorials skip:
 
 </details>
 
-<!-- Video: drag the demo MP4 into GitHub's web editor and paste the user-attachments URL on its own line here. -->
+<p align="center">
+  <img src="assets/readme/demo.gif" alt="Demo of the AI Shop Assistant Rails chat: the user says hi and the Gemini assistant explains it can only search products; the user asks for a snowboard under $500, a 'Searching Shopify's catalog' status appears while the tool call runs, and the reply shows the Salomon Pulse Snowboard at $279.95 from Shopify's live catalog; the user asks to check order #1042 and the assistant says it cannot check orders" width="800">
+</p>
+
+<details>
+<summary>Text version of the demo</summary>
+
+A real chat in the browser, recorded on 2026-10-24:
+
+1. **"Hi, what can you help me with?"** The assistant says it can search the product catalog, and notes that it cannot check orders, shipping, returns or store policies. No search runs.
+2. **"Find me a snowboard under $500"** A yellow "Searching Shopify's catalog..." line appears while the tool call runs, then the reply lists the Salomon Pulse Snowboard Mens 2026 at $279.95, with a link to the store.
+3. **"Can you check my order #1042?"** The assistant says it cannot check orders and offers to search for products instead.
+
+Each reply appears without a page reload, sent from the background job as a Turbo Stream.
+
+</details>
 
 ### Real runs
 
-Three questions sent to `gemini-3.5-flash-lite` with the `SearchProducts` tool, against the live catalog on 2026-10-24. The catalog is live, so the same question can return different products on another day.
+Questions sent to `gemini-3.5-flash-lite` with the `SearchProducts` tool, against the live catalog on 2026-10-24. The catalog is live, so the same question can return different products on another day.
 
 | Question | Tool calls | What the catalog returned | What the model answered |
 |---|---|---|---|
 | "Find me a snowboard under $500" | 1 (`snowboard`) | 3 snowboards: $279.95, $649.95, $549.95 | Only the Salomon Pulse at $279.95, dropping the two over budget |
 | "red running shoes" | 1 (`red running shoes`) | 3 pairs: $187.00, $79.98, $127.00 | All 3, with names, prices and links |
-| "Hi, what can you help me with?" | 0 | (no search) | Offered to check order statuses and store policies, which it cannot do |
+| "Hi, what can you help me with?" (no system prompt) | 0 | (no search) | Offered to check order statuses and store policies, which it cannot do |
+| "Hi, what can you help me with?" (with the system prompt) | 0 | (no search) | "I can help you find products from our store!" and offered to search the catalog |
+| "Can you check my order #1042?" (with the system prompt) | 0 | (no search) | "I'm sorry, I cannot check orders, shipping, returns, accounts, or store policies." |
 
-The first two rows are the point of the project: the model searched, then reasoned over real results (it filtered by budget itself). The third row is an honest failure. The app sends no system prompt, so the model invents a generic store assistant role with abilities it does not have. Its only tool is product search.
+The first two rows are the point of the project: the model searched, then reasoned over real results (it filtered by budget itself). The third row was an honest failure: with no system prompt, the model invented a generic store assistant with abilities it does not have. A short system prompt that names its one ability fixed it (the last two rows).
 
 One tool call returns up to three products, each reduced to a `title`, a `price` and a `url` (see [`app/tools/search_products.rb`](app/tools/search_products.rb)). Prices arrive in minor units (`27995` for $279.95) and the model converts them.
 
@@ -68,7 +85,7 @@ A normal model call is `Question → Answer`. With tool calling it becomes `Ques
 
 1. **Save and enqueue.** [`ChatsController#create`](app/controllers/chats_controller.rb) calls `Chat.start!`, which saves the first message and enqueues a job. It uses the model `gemini-3.5-flash-lite`. Later messages go through [`MessagesController#create`](app/controllers/messages_controller.rb), which returns `head :no_content` straight away.
 2. **Run the model in a job.** [`ChatResponseJob`](app/jobs/chat_response_job.rb) calls `Chat#generate_response`, so a slow Gemini reply never blocks a web request. If the chat was deleted meanwhile, the job logs it and skips.
-3. **Give the model one tool.** [`Chat#generate_response`](app/models/chat.rb) builds `RubyLLM.chat(model: model_id).with_tools(SearchProducts)`. The model now knows it can ask for a search. Before asking, the job replays the earlier messages of the conversation into the new chat so the model remembers what was said.
+3. **Give the model one tool.** [`Chat#generate_response`](app/models/chat.rb) builds `RubyLLM.chat(model: model_id).with_instructions(INSTRUCTIONS).with_tools(SearchProducts)`. The instructions tell the model that searching the catalog is its only ability, and the tool tells it how to ask for a search. Before asking, the job replays the earlier messages of the conversation into the new chat so the model remembers what was said.
 4. **Let the model decide.** If the model asks for the tool, `before_tool_call` broadcasts a "searching" status line to the browser ([`messages/_tool_status`](app/views/messages/_tool_status.html.erb)). If it does not need a search, no call is made.
 5. **Search the live catalog.** [`SearchProducts`](app/tools/search_products.rb) fetches an OAuth 2.0 client-credentials token from `https://api.shopify.com/auth/access_token` (in [`config/initializers/ruby_llm.rb`](config/initializers/ruby_llm.rb)), then sends a JSON-RPC `tools/call` for `search_catalog` to `https://catalog.shopify.com/api/ucp/mcp`. It returns the first three products.
 6. **Save and stream the reply.** The assistant message is saved, and `Message` broadcasts itself with a Turbo Stream ([`app/models/message.rb`](app/models/message.rb)). On any error, the job broadcasts an error message and removes the "searching" line, then re-raises so the failure still shows up in the job dashboard.
@@ -88,10 +105,10 @@ bundle exec rspec
 You need a local MongoDB (`mongod`) running for the app itself. The specs stub RubyLLM and HTTP, so they never call a real API. This is the real output of the last command on my machine:
 
 ```
-..............
+...............
 
-Finished in 1.77 seconds (files took 2.37 seconds to load)
-14 examples, 0 failures
+Finished in 1.07 seconds (files took 2.38 seconds to load)
+15 examples, 0 failures
 ```
 
 To run the app, see [Setup](#setup).
@@ -134,7 +151,7 @@ ai_shop_assistant/
 
 | Spec file | What it covers |
 |---|---|
-| `spec/models/chat_spec.rb` | Saving the user message, replaying history into a fresh LLM chat, `Chat.start!` |
+| `spec/models/chat_spec.rb` | Saving the user message, the system prompt, replaying history into a fresh LLM chat, `Chat.start!` |
 | `spec/models/message_spec.rb` | Message validations |
 | `spec/tools/search_products_spec.rb` | The tool returns products from a stubbed catalog response |
 | `spec/jobs/chat_response_job_spec.rb` | The job calls `generate_response` |
@@ -145,7 +162,7 @@ Folders you can ignore: `bin/`, `config.ru`, `Dockerfile`, `.kamal/`, `public/`,
 
 ## What keeps it reliable
 
-- **Stubbed tests.** All 14 specs stub RubyLLM and HTTP, so the suite is fast and never spends API quota. The trade-off is that they do not prove the live Gemini or Shopify calls work; I check that by running the app.
+- **Stubbed tests.** All 15 specs stub RubyLLM and HTTP, so the suite is fast and never spends API quota. The trade-off is that they do not prove the live Gemini or Shopify calls work; I check that by running the app.
 - **Failure handling.** If the model call raises, the job removes the "searching" status, shows the user a friendly error and re-raises so it stays visible in Mission Control.
 
 **A real failure: replies never reached the browser.** Early on, the chat saved messages but the live reply from the background job never showed up. Action Cable's default `async` adapter keeps broadcasts in one process's memory, and the job runs in a different process from the web server. I switched to Solid Cable, which passes broadcasts through the app's own SQLite database ([`config/cable.yml`](config/cable.yml)).
@@ -164,6 +181,8 @@ Folders you can ignore: `bin/`, `config.ru`, `Dockerfile`, `.kamal/`, `public/`,
 </details>
 
 **A second failure: the assistant forgot the conversation.** Each background job builds a brand new `RubyLLM::Chat`, so on the second message the model had no memory of the first. The fix is in `Chat#generate_response`: it replays the saved messages into the new chat before asking. A spec covers it: it tells the assistant "My name is Alex", then asks "What is my name?" and checks that the earlier turns are replayed.
+
+**A third failure: the assistant claimed abilities it did not have.** Asked "what can you help me with?", the model offered to check order statuses and store policies. It has one tool, product search, but nothing told it that was all it could do, so it filled the gap with a generic store assistant role. The fix is a short system prompt (`Chat::INSTRUCTIONS`, passed with `with_instructions`) that names its one ability and says what it cannot do. A spec checks the prompt is sent, and the live runs above show the before and after.
 
 ## Learn more
 
