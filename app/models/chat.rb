@@ -6,6 +6,13 @@ class Chat
 
   has_many :messages, dependent: :destroy
 
+  INSTRUCTIONS = <<~PROMPT.squish
+    You are a shopping assistant. Your only ability is searching Shopify's product catalog
+    with the search_products tool. You cannot check orders, shipping, returns, accounts or
+    store policies; if asked, say so briefly. Only mention products, prices and links that
+    came back from a search.
+  PROMPT
+
   def ask(content)
     messages.create!(role: "user", content: content)
     generate_response(content)
@@ -13,7 +20,7 @@ class Chat
 
   def generate_response(content)
     tool_status_shown = false
-    llm_chat = RubyLLM.chat(model: model_id).with_tools(SearchProducts)
+    llm_chat = RubyLLM.chat(model: model_id).with_instructions(INSTRUCTIONS).with_tools(SearchProducts)
 
     prior_messages = messages.order_by(created_at: :asc).to_a
     prior_messages.pop
