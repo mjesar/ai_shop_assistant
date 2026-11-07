@@ -1,6 +1,12 @@
 module MessagesHelper
   def render_markdown(text)
-    renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(link_attributes: { target: "_blank", rel: "noopener" }), autolink: true)
-    renderer.render(text).html_safe
+    # Message content comes from visitors and the LLM, so treat it as untrusted:
+    # escape_html shows raw HTML as text, safe_links_only drops javascript: and data: links.
+    html_renderer = Redcarpet::Render::HTML.new(
+      escape_html: true,
+      safe_links_only: true,
+      link_attributes: { target: "_blank", rel: "noopener" }
+    )
+    Redcarpet::Markdown.new(html_renderer, autolink: true).render(text).html_safe
   end
 end
