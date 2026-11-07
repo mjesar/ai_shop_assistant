@@ -76,10 +76,11 @@ RSpec.describe Chat, type: :model do
       chat = nil
 
       expect {
-        chat = Chat.start!(model_id: 'gemini-3.5-flash-lite', content: 'Hi')
+        chat = Chat.start!(model_id: 'gemini-3.5-flash-lite', content: 'Hi', owner_token: 'visitor-1')
       }.to have_enqueued_job(ChatResponseJob)
 
       expect(chat.persisted?).to be true
+      expect(chat.owner_token).to eq('visitor-1')
       expect(chat.messages.count).to eq(1)
       expect(chat.messages.first.role).to eq('user')
       expect(chat.messages.first.content).to eq('Hi')

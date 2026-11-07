@@ -87,7 +87,7 @@ bin/rails db:prepare     # creates the Solid Queue and Solid Cable SQLite databa
 bin/dev                  # web server, Tailwind watcher and job worker together
 ```
 
-Then open http://localhost:3000/chats. Background jobs are visible at http://localhost:3000/jobs. MongoDB connection settings are in `config/mongoid.yml`.
+Then open http://localhost:3000/chats. Background jobs are visible at http://localhost:3000/jobs, which needs a username and password: run `bin/rails mission_control:jobs:authentication:configure` to set them. MongoDB connection settings are in `config/mongoid.yml`.
 
 ## How it works
 
@@ -186,8 +186,8 @@ ai_shop_assistant/
 | `spec/models/message_spec.rb` | Message validations |
 | `spec/tools/search_products_spec.rb` | The tool returns products from a stubbed catalog response |
 | `spec/jobs/chat_response_job_spec.rb` | The job calls `generate_response` |
-| `spec/requests/` | Chats and messages endpoints |
-| `spec/helpers/messages_helper_spec.rb` | Markdown rendering |
+| `spec/requests/` | Chats and messages endpoints, chat ownership, rate limits, the Content Security Policy header |
+| `spec/helpers/messages_helper_spec.rb` | Markdown rendering, and escaping of untrusted HTML and links |
 
 You can ignore `bin/`, `config.ru`, `Dockerfile`, `.kamal/`, `public/`, `storage/`, `tmp/` and `log/`: they are standard Rails 8 boilerplate. `app/mailers/` and `app/views/pwa/` are generated and unused.
 
@@ -231,6 +231,9 @@ It works end to end: you can chat, the model searches the live catalog, and repl
 - It returns at most three products per search.
 - It only searches. There is no cart, checkout or account.
 - The specs stub every external call, so no automated test checks the live APIs.
+- There are no accounts. An encrypted cookie ties each chat to the browser that started it, so clearing cookies loses access to those chats.
+- New chats and messages share a limit of 10 per minute and 100 per day for each IP address, because each one triggers a paid LLM call.
+- Message content is treated as untrusted: raw HTML is escaped, unsafe links are dropped, and a Content Security Policy blocks inline scripts and images from other sites.
 
 The code is released under the [MIT License](LICENSE).
 
