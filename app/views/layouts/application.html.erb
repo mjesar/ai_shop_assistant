@@ -23,6 +23,12 @@
     </header>
 
     <main class="container mx-auto mt-8 px-5">
+      <% if flash[:alert] %>
+        <p class="p-3 rounded bg-red-50 text-red-800 border border-red-200 mb-4" role="alert"><%= flash[:alert] %></p>
+      <% end %>
+      <% if flash[:notice] %>
+        <p class="p-3 rounded bg-emerald-50 text-emerald-900 mb-4" role="status"><%= flash[:notice] %></p>
+      <% end %>
       <%= yield %>
     </main>
   </body>

@@ -3,6 +3,7 @@ class Chat
   include Mongoid::Timestamps
 
   field :model_id, type: String
+  field :owner_token, type: String
 
   has_many :messages, dependent: :destroy
 
@@ -51,8 +52,8 @@ class Chat
     raise
   end
 
-  def self.start!(model_id:, content:)
-    chat = create!(model_id: model_id)
+  def self.start!(model_id:, content:, owner_token:)
+    chat = create!(model_id: model_id, owner_token: owner_token)
     chat.messages.create!(role: "user", content: content)
     ChatResponseJob.perform_later(chat.id, content)
     chat
